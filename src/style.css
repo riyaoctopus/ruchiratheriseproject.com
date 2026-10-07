@@ -1,0 +1,263 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+
+  --color-ink: #0b2a23;
+  --color-ink-2: #0f3329;
+  --color-ink-3: #123b2f;
+  --color-gold-light: #ecdcae;
+  --color-gold: #c9a24c;
+  --color-gold-deep: #8a6a22;
+  --color-cream: #faf8f3;
+  --color-cream-card: #f3efe6;
+  --color-cream-dim: #e3dcc9;
+  --color-charcoal: #1c2420;
+  --color-muted: #5c685f;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-charcoal);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ---------- Animations (adapted from design reference) ---------- */
+@keyframes kenBurns {
+  0% { transform: scale(1) translate(0%, 0%); }
+  50% { transform: scale(1.06) translate(-1.2%, -0.8%); }
+  100% { transform: scale(1.03) translate(0.8%, 0.4%); }
+}
+@keyframes heroEntrance {
+  0% { opacity: 0; transform: translateY(22px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseRadar {
+  0% { transform: scale(1); opacity: 0.9; }
+  70% { transform: scale(2.4); opacity: 0; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+@keyframes revealUp {
+  0% { opacity: 0; transform: translateY(28px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.ken-burns { animation: kenBurns 24s ease-in-out infinite alternate; }
+
+/* ---------- Hero spatial scene ---------- */
+.hero-stage { perspective: 1800px; overflow: hidden; }
+.hero-tower-wrap {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.2s ease-out;
+}
+.hero-tower-wrap img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+@keyframes heroGlowPulse {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+.hero-glow {
+  animation: heroGlowPulse 7s ease-in-out infinite;
+  filter: blur(10px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow { animation: none; }
+  .hero-tower-wrap { transition: none; }
+}
+.anim-fade-1 { animation: heroEntrance 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+.anim-fade-2 { animation: heroEntrance 0.8s cubic-bezier(0.16,1,0.3,1) 0.15s forwards; opacity: 0; }
+.anim-fade-3 { animation: heroEntrance 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; opacity: 0; }
+.anim-fade-4 { animation: heroEntrance 0.8s cubic-bezier(0.16,1,0.3,1) 0.45s forwards; opacity: 0; }
+
+.radar-ping { animation: pulseRadar 2.2s cubic-bezier(0,0,0.2,1) infinite; }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ken-burns, .anim-fade-1, .anim-fade-2, .anim-fade-3, .anim-fade-4, .radar-ping {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---------- Shared component patterns ---------- */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-gold);
+  transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.nav-link:hover::after,
+.nav-link.is-active::after {
+  width: 100%;
+}
+
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), box-shadow 0.35s cubic-bezier(0.4,0,0.2,1), background-color 0.35s, color 0.35s;
+}
+.btn-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.65s cubic-bezier(0.4,0,0.2,1);
+}
+.btn-shimmer:hover::after { transform: translateX(100%); }
+.btn-shimmer:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -6px rgba(197,162,76,0.45); }
+
+[data-tab-panel] { display: none; }
+[data-tab-panel].is-active { display: block; }
+
+[data-accordion-panel] {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+[data-accordion-item] [data-accordion-icon] { transition: transform 0.3s ease; }
+
+/* ---------- Key facts grid (project overview) ---------- */
+.fact dt {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 0.3rem;
+}
+.fact dd {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  line-height: 1.35;
+}
+
+/* ---------- Form fields (shared by inline + modal enquiry forms) ---------- */
+.field label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  color: var(--color-charcoal);
+}
+.field-input {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--color-cream-card);
+  border: 1px solid var(--color-cream-dim);
+  border-radius: 0.375rem;
+  padding: 0 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.field-input:focus-within {
+  border-color: var(--color-gold-deep);
+  box-shadow: 0 0 0 3px rgba(197, 162, 76, 0.18);
+}
+.field-input .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--color-gold-deep);
+  flex-shrink: 0;
+}
+.field-input input,
+.field-input select,
+.field-input textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  padding: 0.75rem 0;
+  color: var(--color-charcoal);
+}
+.field-input--textarea { align-items: flex-start; padding-top: 0.1rem; }
+.field-input--textarea .material-symbols-outlined { margin-top: 0.75rem; }
+.field-input select { appearance: auto; cursor: pointer; }
+
+/* ---------- Enquiry modal ---------- */
+#enquiry-modal.is-open { display: block; }
+body.modal-open { overflow: hidden; }
+
+/* ---------- Floor plan gate (blur + unlock overlay) ---------- */
+.floorplan-gate img {
+  filter: blur(18px) saturate(0.85);
+  transform: scale(1.04);
+  transition: filter 0.5s ease, transform 0.5s ease;
+}
+html.leads-unlocked .floorplan-gate img {
+  filter: none;
+  transform: none;
+}
+.floorplan-gate-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(11,42,35,0.15), rgba(11,42,35,0.55));
+  transition: opacity 0.3s ease;
+}
+html.leads-unlocked .floorplan-gate-overlay {
+  display: none;
+}
+.floorplan-gate-card {
+  background: rgba(255,255,255,0.97);
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  text-align: center;
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.35);
+  max-width: 260px;
+  max-height: 100%;
+  overflow: hidden;
+}
+.floorplan-gate-card .material-symbols-outlined {
+  font-size: 22px;
+  color: var(--color-gold-deep);
+}
+.floorplan-gate-card p:first-of-type { margin-top: 0.35rem; margin-bottom: 0.15rem; }
+.floorplan-gate-card p:nth-of-type(2) { margin-bottom: 0.75rem; }
+.floorplan-gate { min-height: 230px; }
+[data-accordion-item].is-open [data-accordion-icon] { transform: rotate(180deg); }

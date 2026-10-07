@@ -1,0 +1,10 @@
+node_modules
+dist
+server/data/leads.jsonl
+server/data/leads.xlsx
+.env
+.DS_Store
+
+# Original AI-generated template reference (design/animation reference only —
+# superseded entirely by the real site; kept locally, not part of the repo).
+stitch_frontend/
